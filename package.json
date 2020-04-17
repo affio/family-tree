@@ -6,7 +6,7 @@
   "scripts": {
     "unit": "jest",
     "lint:eslint": "eslint --ext js index.js src/",
-    "lint:prettier": "prettier \"./**/*.{html,css,md}\" --write",
+    "lint:prettier": "prettier \"./**/*.{html,css,md,json,yml}\" --write",
     "lint": "npm-run-all lint:*",
     "build": "parcel build index.html",
     "start": "parcel index.html",
@@ -68,6 +68,6 @@
   },
   "lint-staged": {
     "*.js": "eslint --fix",
-    "*.{html,css,md}": "prettier --write"
+    "*.{html,css,md,json,yml}": "prettier --write"
   }
 }
