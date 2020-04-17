@@ -1,0 +1,160 @@
+{
+  "self": "5e964f0dbfccb8040052ed9b",
+  "members": [
+    {
+      "_id": "5e964f0dbfccb8040052ed9b",
+      "id": "5e964f0dbfccb8040052ed9b",
+      "images": [],
+      "surname": "Test",
+      "name": "Affio",
+      "gender": "female",
+      "birth": {
+        "_id": "5e964f10bfccb8040052ed9f",
+        "year": 1970,
+        "month": 1,
+        "day": 1,
+        "is": { "minor": false },
+        "id": "5e964f10bfccb8040052ed9f"
+      },
+      "address": {
+        "_id": "5e964f12bfccb8040052eda0",
+        "country": "GB-ENG",
+        "postcode": "WG7 7FU",
+        "region": "Lancashire",
+        "city": "Wigan",
+        "line1": "62 West Wallaby Street",
+        "is": { "overseas": false },
+        "id": "5e964f12bfccb8040052eda0"
+      }
+    },
+    {
+      "_id": "5e964f19bfccb8040052eda1",
+      "id": "5e964f19bfccb8040052eda1",
+      "address": {
+        "_id": "5e964f12bfccb8040052eda0",
+        "country": "GB-ENG",
+        "postcode": "WG7 7FU",
+        "region": "Lancashire",
+        "city": "Wigan",
+        "line1": "62 West Wallaby Street",
+        "is": { "overseas": false },
+        "id": "5e964f12bfccb8040052eda0"
+      },
+      "images": [],
+      "name": "Autto",
+      "surname": "Test",
+      "gender": "female",
+      "birth": {
+        "_id": "5e964f1cbfccb8040052eda4",
+        "minor": false,
+        "is": { "minor": false },
+        "id": "5e964f1cbfccb8040052eda4"
+      }
+    },
+    {
+      "_id": "5e964f1fbfccb8040052eda5",
+      "id": "5e964f1fbfccb8040052eda5",
+      "surname": "Test",
+      "images": [],
+      "name": "Mongo",
+      "gender": "male",
+      "birth": {
+        "_id": "5e964f23bfccb8040052eda8",
+        "minor": true,
+        "is": { "minor": true },
+        "id": "5e964f23bfccb8040052eda8"
+      },
+      "address": {
+        "_id": "5e964f12bfccb8040052eda0",
+        "country": "GB-ENG",
+        "postcode": "WG7 7FU",
+        "region": "Lancashire",
+        "city": "Wigan",
+        "line1": "62 West Wallaby Street",
+        "is": { "overseas": false },
+        "id": "5e964f12bfccb8040052eda0"
+      }
+    },
+    {
+      "_id": "5e964f26bfccb8040052eda9",
+      "id": "5e964f26bfccb8040052eda9",
+      "surname": "Test",
+      "images": [],
+      "name": "Fauna",
+      "gender": "male",
+      "birth": {
+        "_id": "5e964f29bfccb8040052edac",
+        "minor": true,
+        "is": { "minor": true },
+        "id": "5e964f29bfccb8040052edac"
+      },
+      "address": {
+        "_id": "5e964f12bfccb8040052eda0",
+        "country": "GB-ENG",
+        "postcode": "WG7 7FU",
+        "region": "Lancashire",
+        "city": "Wigan",
+        "line1": "62 West Wallaby Street",
+        "is": { "overseas": false },
+        "id": "5e964f12bfccb8040052eda0"
+      }
+    },
+    {
+      "_id": "5e964f2dbfccb8040052edad",
+      "id": "5e964f2dbfccb8040052edad",
+      "images": [],
+      "name": "Will",
+      "surname": "Fare",
+      "gender": "male",
+      "birth": {
+        "_id": "5e964f33bfccb8040052edae",
+        "minor": false,
+        "is": { "minor": false },
+        "id": "5e964f33bfccb8040052edae"
+      },
+      "address": {
+        "_id": "5e964f33bfccb8040052edaf",
+        "country": "US",
+        "postcode": "87111",
+        "region": "New Mexico",
+        "city": "Albuquerque",
+        "line1": "3828 Piermont Drive Northeast",
+        "is": { "overseas": true },
+        "id": "5e964f33bfccb8040052edaf"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "_id": "5e964f1abfccb8040052eda2",
+      "target": "5e964f19bfccb8040052eda1",
+      "origin": "5e964f0dbfccb8040052ed9b",
+      "type": "partner",
+      "status": "married"
+    },
+    {
+      "_id": "5e964f1fbfccb8040052eda6",
+      "target": "5e964f1fbfccb8040052eda5",
+      "origin": "5e964f0dbfccb8040052ed9b",
+      "type": "child"
+    },
+    {
+      "_id": "5e964f22bfccb8040052eda7",
+      "target": "5e964f1fbfccb8040052eda5",
+      "origin": "5e964f19bfccb8040052eda1",
+      "type": "child"
+    },
+    {
+      "_id": "5e964f26bfccb8040052edaa",
+      "target": "5e964f26bfccb8040052eda9",
+      "origin": "5e964f0dbfccb8040052ed9b",
+      "type": "child"
+    },
+    {
+      "_id": "5e964f28bfccb8040052edab",
+      "target": "5e964f26bfccb8040052eda9",
+      "origin": "5e964f19bfccb8040052eda1",
+      "type": "child"
+    }
+  ]
+}

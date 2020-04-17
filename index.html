@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" ng-app>
+  <head>
+    <meta charset="utf-8" />
+    <title>Family Tree</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="./index.css" />
+  </head>
+
+  <body ng-controller="app.controller">
+    <div class="ft-scale">
+      <input
+        class="ft-scale-range"
+        type="range"
+        min="0.25"
+        max="1.5"
+        ng-model="model.scale"
+        step="0.01"
+        ng-orient="vertical"
+      />
+      <span>Zoom</span>
+    </div>
+    <div ng-include="svgTemplate"></div>
+
+    <script src="./index.js"></script>
+  </body>
+</html>

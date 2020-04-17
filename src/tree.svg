@@ -1,0 +1,5 @@
+<svg svg-family-tree app-fill-viewport app-focus="active || model.self().id" app-links="model.links()" svg-scale="model.scale" svg-node-width="200" svg-node-height="90" width="100%" height="500">
+  <g svg-family-tree-node app-node-id="node.id" ng-repeat="node in model.family()">
+    <app-card ng-model="node"></app-card>
+  </g>
+</svg>

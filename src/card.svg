@@ -1,0 +1,9 @@
+<svg class="card">
+  <rect class="ft-card-background" width="200" height="90"/>
+  <text class="ft-card-firstname" svg-truncating-text-width="140" dx="60" dy="1.2em">{{ model.name }}</text>
+  <text class="ft-card-lastname" svg-truncating-text-width="140" dx="60" dy="2.5em" >{{ model.surname }}</text>
+  <g transform="translate(0,65)" class="ft-card-edit" ng-click="select()">
+    <rect width="200" height="25"/>
+    <text dx="40" dy="1.1em" >View Details</text>
+  </g>
+</svg>

@@ -1,0 +1,49 @@
+.ft-line {
+  stroke: black;
+}
+.ft-card-background {
+  fill: #c2ce94;
+}
+.ft-card-firstname,
+.ft-card-lastname {
+  font-weight: 400;
+  font-size: 22px;
+  fill: lighten($brand-secondary, $contrast);
+  font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+.ft-card-edit {
+  cursor: pointer;
+}
+.ft-card-edit rect {
+  fill: lighten($brand-secondary, $contrast);
+}
+.ft-card-edit text {
+  fill: darken($brand-secondary, $contrast-high);
+  text-transform: uppercase;
+  font-weight: 300;
+  font-family: 'Raleway', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+.ft-scale {
+  position: absolute;
+  z-index: 1;
+  left: 28px;
+  width: 40px;
+  top: 20px;
+  text-align: center;
+  background-color: white(0);
+  border-radius: 2px;
+}
+svg[svg-family-tree] {
+  cursor: move;
+}
+g[svg-family-tree-node] {
+  cursor: pointer;
+}
+.ft-scale-range {
+  writing-mode: bt-lr; /* IE */
+  -webkit-appearance: slider-vertical; /* WebKit */
+  width: 8px;
+  height: 175px;
+  padding: 0 5px;
+  left: 13px;
+}
