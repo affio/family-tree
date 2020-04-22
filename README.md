@@ -2,4 +2,4 @@
 
 Family Tree layout engine
 
-![deploy status](../../../workflows/deploy/badge.svg)
+![deploy status](https://github.com/Affio/family-tree/workflows/deploy/badge.svg)
