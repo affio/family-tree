@@ -5,7 +5,7 @@ import Hammer from 'hammerjs'
 import angular from 'angular'
 import layout from './layout'
 
-const SVG_NS = 'https://www.w3.org/2000/svg'
+const SVG_NS = 'http://www.w3.org/2000/svg'
 
 // WARNING: This directive wraps a lot of direct DOM
 // manipulation, it's not very angular-like inside (but
