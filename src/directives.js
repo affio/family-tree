@@ -1,11 +1,11 @@
-/* eslint-disable no-param-reassign, no-use-before-define, no-underscore-dangle, no-shadow, no-restricted-globals, prefer-spread, eqeqeq */
+/* eslint-disable no-underscore-dangle, no-param-reassign, prefer-spread, eqeqeq */
 
 import _ from 'underscore'
-import Hammer from 'hammerjs'
 import angular from 'angular'
+import Hammer from 'hammerjs'
 import layout from './layout'
 
-const SVG_NS = 'https://www.w3.org/2000/svg'
+const SVG_NS = 'http://www.w3.org/2000/svg'
 
 // WARNING: This directive wraps a lot of direct DOM
 // manipulation, it's not very angular-like inside (but
@@ -13,88 +13,24 @@ const SVG_NS = 'https://www.w3.org/2000/svg'
 // the world)
 angular
   .module('app.directives', [])
+
   .controller('FamilyTreeController', function ($scope, $element, $interval) {
     let layoutData = null
-    const nodeElements = {}
-    const lineElements = []
     let links
     let nodeWidth
     let nodeHeight
     let panx = 0
     let pany = 0
     let scale = 1
-    const self = this
 
-    function group() {
-      return angular.element($element.find('g')[0])
-    }
+    const nodeElements = {}
+    const lineElements = []
 
-    function boundingBox() {
-      return $element[0].getBoundingClientRect()
-    }
+    const group = () => angular.element($element.find('g')[0])
 
-    this.updateLinks = function (focusNodeId, _links, _nodeWidth, _nodeHeight) {
-      links = _links
-      nodeWidth = _nodeWidth
-      nodeHeight = _nodeHeight
-      focusNodeId = focusNodeId || (links[0] && links[0].origin)
-      layoutData = layout.layout(
-        focusNodeId,
-        links,
-        nodeWidth,
-        nodeWidth / 10,
-        (nodeWidth / 10) * 2,
-        nodeHeight * 1.5,
-        nodeHeight / 10
-      )
-      positionNodes()
-      drawLines(nodeWidth, nodeHeight)
-      this.focus(focusNodeId, false)
-    }
+    const boundingBox = () => $element[0].getBoundingClientRect()
 
-    this.registerNode = function (id, element) {
-      nodeElements[id] = element
-      positionNodes()
-
-      new Hammer(element[0]).on('tap', function () {
-        $scope.$apply(function () {
-          self.focus(id, true)
-        })
-      })
-    }
-
-    this.unregisterNode = function (id) {
-      delete nodeElements[id]
-      positionNodes()
-    }
-
-    this.focus = function (id, animate) {
-      if (!layoutData) return
-
-      // this.updateLinks(id, links, nodeWidth, nodeHeight);
-      const bb = boundingBox()
-      const s = 1
-      const x = bb.width / 2 - layoutData.nodes[id].x * s
-      const y = bb.height / 2 - layoutData.nodes[id].y * s
-      if (animate) {
-        animateTo(x, y, s, 200)
-      } else {
-        panTo(x, y, s)
-      }
-      $scope.$emit('ftFocusNode', id)
-    }
-
-    this.setScale = function (s) {
-      if (s == scale) return
-      const bb = boundingBox()
-      _setScale(s, scale, panx, pany, bb.width / 2, bb.height / 2)
-    }
-
-    this.getScale = function () {
-      return scale
-    }
-
-    function applyTransform() {
+    const applyTransform = () => {
       if (_.isNaN(panx) || _.isNaN(pany)) return
       group().attr(
         'transform',
@@ -103,7 +39,7 @@ angular
     }
 
     let animatingInterval
-    function animateTo(x, y, s, duration) {
+    const animateTo = (x, y, s, duration) => {
       // sin(x)/2+0.5 from -pi/2 to pi/2 gives a nice curve
       // with ease in and ease out
       const start = _.now()
@@ -129,7 +65,7 @@ angular
       animatingInterval = $interval(step, 10)
     }
 
-    function panTo(x, y, s) {
+    const panTo = (x, y, s) => {
       $interval.cancel(animatingInterval)
       scale = s || scale
       const bb = boundingBox()
@@ -148,7 +84,7 @@ angular
       applyTransform()
     }
 
-    function _setScale(s, startscale, startx, starty, centerx, centery) {
+    const _setScale = (s, startscale, startx, starty, centerx, centery) => {
       // Constrain the minimum and maximum zoom
       s = Math.max(0.25, Math.min(1.5, s))
       const x = startx - (centerx - startx) * (1 / startscale - 1 / s) * s
@@ -156,9 +92,9 @@ angular
       panTo(x, y, s)
     }
 
-    function positionNodes() {
+    const positionNodes = () => {
       if (!layoutData) return
-      _.each(nodeElements, function (element, id) {
+      _.each(nodeElements, (element, id) => {
         const nodePos = layoutData.nodes[id]
         if (nodePos && !_.isNaN(nodePos.x) && !_.isNaN(nodePos.y)) {
           element.attr(
@@ -169,10 +105,9 @@ angular
           )
         }
       })
-      focus('child2')
     }
 
-    function drawLines() {
+    const drawLines = () => {
       if (!layoutData) return
 
       // More of a D3 style, but in Angular, sorry!
@@ -198,6 +133,65 @@ angular
       })
     }
 
+    this.updateLinks = (focusNodeId, _links, _nodeWidth, _nodeHeight) => {
+      links = _links
+      nodeWidth = _nodeWidth
+      nodeHeight = _nodeHeight
+
+      focusNodeId = focusNodeId || (links[0] && links[0].origin)
+
+      layoutData = layout.layout(
+        focusNodeId,
+        links,
+        nodeWidth,
+        nodeWidth / 10,
+        (nodeWidth / 10) * 2,
+        nodeHeight * 1.5,
+        nodeHeight / 10
+      )
+
+      positionNodes()
+      drawLines(nodeWidth, nodeHeight)
+      this.focus(focusNodeId, false)
+    }
+
+    this.registerNode = (id, element) => {
+      nodeElements[id] = element
+      positionNodes()
+
+      new Hammer(element[0]).on('tap', () => {
+        $scope.$apply(() => this.focus(id, true))
+      })
+    }
+
+    this.unregisterNode = (id) => {
+      delete nodeElements[id]
+      positionNodes()
+    }
+
+    this.focus = (id, animate) => {
+      if (!layoutData) return
+
+      const bb = boundingBox()
+      const s = 1
+      const x = bb.width / 2 - layoutData.nodes[id].x * s
+      const y = bb.height / 2 - layoutData.nodes[id].y * s
+      if (animate) {
+        animateTo(x, y, s, 200)
+      } else {
+        panTo(x, y, s)
+      }
+      $scope.$emit('ftFocusNode', id)
+    }
+
+    this.setScale = (s) => {
+      if (s == scale) return
+      const bb = boundingBox()
+      _setScale(s, scale, panx, pany, bb.width / 2, bb.height / 2)
+    }
+
+    this.getScale = () => scale
+
     // Handle dragging to pan
     const hammertime = new Hammer($element[0])
     let lastPinch = 0
@@ -219,21 +213,15 @@ angular
 
     let startscale
     let scalecenter
-    hammertime.on('pinchstart', function (evt) {
+    hammertime.on('pinchstart', (evt) => {
       startscale = scale
       startx = panx
       starty = pany
       scalecenter = evt.center
     })
 
-    hammertime.on('pinchmove', function (evt) {
-      // var s =  startscale * evt.scale;
-      // // Constrain the minimum and maximum zoom
-      // s = Math.max(0.25, Math.min(1.5, s));
-      // var x = startx - (scalecenter.x - startx) * (1/startscale - 1/s) * s;
-      // var y = starty - (scalecenter.y - starty) * (1/startscale - 1/s) * s;
-      // panTo(x,y,s);
-      $scope.$apply(function () {
+    hammertime.on('pinchmove', (evt) => {
+      $scope.$apply(() => {
         _setScale(
           startscale * evt.scale,
           startscale,
@@ -246,8 +234,8 @@ angular
       })
     })
 
-    $element.on('wheel', function (evt) {
-      $scope.$apply(function () {
+    $element.on('wheel', (evt) => {
+      $scope.$apply(() => {
         if (evt.originalEvent) {
           // If jQuery is being used
           evt = evt.originalEvent
@@ -256,119 +244,105 @@ angular
           -1,
           Math.min(1, evt.wheelDelta || -evt.deltaY)
         )
-        self.setScale(scale + direction * 0.1)
+        this.setScale(scale + direction * 0.1)
       })
       evt.preventDefault()
     })
   })
 
-  .directive('svgFamilyTree', function ($parse) {
-    return {
-      restrict: 'A',
-      controller: 'FamilyTreeController',
-      transclude: true,
-      compile(element, attrs, transclude) {
-        return function (scope, element, attr, controller) {
-          // Insert the extra <g> to handle pan-zoom
-          const g = angular.element(document.createElementNS(SVG_NS, 'g'))
-          element.append(g)
-          transclude(scope, function (clone) {
-            g.append(clone)
-          })
+  .directive('svgFamilyTree', ($parse) => ({
+    restrict: 'A',
+    controller: 'FamilyTreeController',
+    transclude: true,
+    template: '<g ng-transclude></g>',
+    link: (scope, element, attr, controller) => {
+      // Hook up the attributes to the controller
+      scope.$watch(
+        () => [
+          scope.$eval(attr.appLinks),
+          parseInt(attr.svgNodeWidth, 10),
+          parseInt(attr.svgNodeHeight, 10),
+        ],
+        (values) => {
+          values.unshift(scope.$eval(attr.appFocus))
+          controller.updateLinks.apply(controller, values)
+        },
+        /* objectEquality: */ true
+      )
 
-          // Hook up the attributes to the controller
-          const attrWatch = `[${_.map(
-            ['appLinks', 'svgNodeWidth', 'svgNodeHeight'],
-            _.propertyOf(attr)
-          ).join(',')}]`
-          scope.$watch(
-            attrWatch,
-            function (values) {
-              values.unshift(scope.$eval(attr.appFocus))
-              controller.updateLinks.apply(controller, values)
-            },
-            true
-          )
+      scope.$watch(attr.appFocus, (focus) => {
+        controller.focus(focus, true)
+      })
 
-          scope.$watch(attr.appFocus, function (focus) {
-            controller.focus(focus, true)
-          })
-
-          scope.$watch(attr.svgScale, function (scale) {
-            scale = parseFloat(scale)
-            if (!_.isNaN(scale)) {
-              controller.setScale(scale)
-            }
-          })
-
-          scope.$watch(
-            function () {
-              return controller.getScale()
-            },
-            function (scale) {
-              $parse(attr.svgScale).assign(scope, scale)
-            }
-          )
+      scope.$watch(attr.svgScale, (scale) => {
+        scale = parseFloat(scale)
+        if (!_.isNaN(scale)) {
+          controller.setScale(scale)
         }
-      },
-    }
-  })
+      })
 
-  .directive('svgFamilyTreeNode', function () {
-    return {
-      restrict: 'A',
-      require: '^svgFamilyTree',
-      link(scope, element, attr, controller) {
-        let id
-        scope.$watch(attr.appNodeId, function (newId) {
-          if (id) {
-            controller.unregisterNode(id)
-          }
-          id = newId
-          if (id) {
-            controller.registerNode(id, element)
-          }
-        })
-
-        scope.$on('$destroy', function () {
-          if (id) {
-            controller.unregisterNode(id)
-          }
-        })
-      },
-    }
-  })
-
-  .directive('svgTruncatingTextWidth', function () {
-    return {
-      restrict: 'A',
-      link(scope, element, attrs) {
-        let truncatedText = null
-        if (!element[0].getComputedTextLength) {
-          console.log('getComputedTextLength not supported!')
-          return
+      scope.$watch(
+        () => controller.getScale(),
+        (scale) => {
+          $parse(attr.svgScale).assign(scope, scale)
         }
-        function update() {
-          let text = element.text()
-          const maxLength = parseInt(
-            scope.$eval(attrs.svgTruncatingTextWidth),
-            10
-          )
-          if (text === truncatedText) return
-          element.attr('title', text)
-          while (element[0].getComputedTextLength() > maxLength) {
-            text = text.slice(0, -1).trim()
-            element.text(`${text}...`)
-          }
-          truncatedText = `${text}...`
+      )
+    },
+  }))
+
+  .directive('svgFamilyTreeNode', () => ({
+    restrict: 'A',
+    require: '^svgFamilyTree',
+    link: (scope, element, attr, controller) => {
+      let id
+
+      scope.$watch(attr.appNodeId, (newId) => {
+        if (id) controller.unregisterNode(id)
+
+        id = newId
+        if (id) controller.registerNode(id, element)
+      })
+
+      scope.$on('$destroy', () => {
+        if (id) controller.unregisterNode(id)
+      })
+    },
+  }))
+
+  .directive('svgTruncatingTextWidth', () => ({
+    restrict: 'A',
+    link: (scope, element, attrs) => {
+      let truncatedText = null
+
+      if (!element[0].getComputedTextLength) {
+        console.warn('getComputedTextLength is not supported')
+        return
+      }
+
+      const update = () => {
+        let text = element.text()
+
+        const maxLength = parseInt(
+          scope.$eval(attrs.svgTruncatingTextWidth),
+          10
+        )
+
+        if (text === truncatedText) return
+
+        element.attr('title', text)
+
+        while (element[0].getComputedTextLength() > maxLength) {
+          text = text.slice(0, -1).trim()
+          element.text(`${text}…`)
         }
-        scope.$watch(attrs.svgTruncatingTextWidth, update)
-        scope.$watch(function () {
-          return element.text()
-        }, update)
-      },
-    }
-  })
+
+        truncatedText = `${text}…`
+      }
+
+      scope.$watch(attrs.svgTruncatingTextWidth, update)
+      scope.$watch(() => element.text(), update)
+    },
+  }))
 
   .controller('directives.card.controller', function ($scope) {
     $scope.select = () => console.info('Selected!')

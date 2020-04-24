@@ -98,30 +98,6 @@
         "is": { "overseas": false },
         "id": "5e964f12bfccb8040052eda0"
       }
-    },
-    {
-      "_id": "5e964f2dbfccb8040052edad",
-      "id": "5e964f2dbfccb8040052edad",
-      "images": [],
-      "name": "Will",
-      "surname": "Fare",
-      "gender": "male",
-      "birth": {
-        "_id": "5e964f33bfccb8040052edae",
-        "minor": false,
-        "is": { "minor": false },
-        "id": "5e964f33bfccb8040052edae"
-      },
-      "address": {
-        "_id": "5e964f33bfccb8040052edaf",
-        "country": "US",
-        "postcode": "87111",
-        "region": "New Mexico",
-        "city": "Albuquerque",
-        "line1": "3828 Piermont Drive Northeast",
-        "is": { "overseas": true },
-        "id": "5e964f33bfccb8040052edaf"
-      }
     }
   ],
   "relationships": [
