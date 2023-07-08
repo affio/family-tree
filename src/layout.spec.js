@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign, no-underscore-dangle, prefer-rest-params */
 
+import { describe, test as it } from 'vitest'
 import { expect } from 'chai'
 import _ from 'underscore'
 
@@ -8,12 +9,10 @@ import _layout from './layout'
 const layout = _.extend({}, _layout, _layout._private)
 
 function splat(fn) {
-  return function () {
-    return fn.apply(this, arguments[0].concat(_.rest(arguments)))
-  }
+  return (...args) => fn.apply(this, args[0].concat(_.rest(args)))
 }
 
-describe('layout', function () {
+describe('layout', () => {
   const TEST_DATA = [
     {
       /*
@@ -156,118 +155,118 @@ describe('layout', function () {
     },
   ]
 
-  _.each(TEST_DATA, function (d, i) {
+  _.each(TEST_DATA, (d, i) => {
     d.title = d.title || `Test data ${i}`
   })
 
-  describe('.crossings()', function () {
-    _.each(TEST_DATA, function (data) {
-      it(`should calculate the correct crossing for ${data.title}`, function () {
+  describe('.crossings()', () => {
+    _.each(TEST_DATA, (data) => {
+      it(`should calculate the correct crossing for ${data.title}`, () => {
         expect(layout.crossings(data.order, data.links)).to.equal(
-          data.crossings
+          data.crossings,
         )
       })
     })
   })
 
-  describe('.assignRanks()', function () {
-    _.each(TEST_DATA, function (data) {
-      it(`should assign ranks correctly for ${data.title}`, function () {
+  describe('.assignRanks()', () => {
+    _.each(TEST_DATA, (data) => {
+      it(`should assign ranks correctly for ${data.title}`, () => {
         const ranks = layout.assignRanks('a', data.links)
         _.each(
           _.zip(ranks, data.order),
-          splat(function (a, b) {
+          splat((a, b) => {
             expect(_.sortBy(a, _.identity)).to.deep.equal(
-              _.sortBy(b, _.identity)
+              _.sortBy(b, _.identity),
             )
-          })
+          }),
         )
       })
     })
   })
 
-  describe('.breadthFirstOrder()', function () {
-    _.each(TEST_DATA, function (data) {
-      it(`should find correct breadth first order for ${data.title}`, function () {
+  describe('.breadthFirstOrder()', () => {
+    _.each(TEST_DATA, (data) => {
+      it(`should find correct breadth first order for ${data.title}`, () => {
         const order = layout.breadthFirstOrder(data.order, data.links)
         _.each(
           _.zip(order, data.breadthFirstOrder || data.order),
-          splat(function (a, b) {
+          splat((a, b) => {
             expect(a).to.deep.equal(b)
-          })
+          }),
         )
       })
     })
   })
 
-  describe('.cupid()', function () {
-    it('should re-order nodes to put partners together (moving forwards)', function () {
+  describe('.cupid()', () => {
+    it('should re-order nodes to put partners together (moving forwards)', () => {
       expect(
         layout.cupid(
           [['a', 'b', 'c']],
-          [{ type: 'partner', origin: 'c', target: 'a' }]
-        )
+          [{ type: 'partner', origin: 'c', target: 'a' }],
+        ),
       ).to.deep.equal([['b', 'c', 'a']])
     })
 
-    it('should re-order nodes to put partners together (moving backwards)', function () {
+    it('should re-order nodes to put partners together (moving backwards)', () => {
       expect(
         layout.cupid(
           [['a', 'b', 'c']],
-          [{ type: 'partner', origin: 'a', target: 'c' }]
-        )
+          [{ type: 'partner', origin: 'a', target: 'c' }],
+        ),
       ).to.deep.equal([['a', 'c', 'b']])
     })
 
-    it('should order partners in the direction of the relationship link', function () {
+    it('should order partners in the direction of the relationship link', () => {
       expect(
         layout.cupid(
           [['a', 'b', 'c']],
-          [{ type: 'partner', origin: 'b', target: 'a' }]
-        )
+          [{ type: 'partner', origin: 'b', target: 'a' }],
+        ),
       ).to.deep.equal([['b', 'a', 'c']])
     })
 
-    it('should leave order alone when partners are already together', function () {
+    it('should leave order alone when partners are already together', () => {
       expect(
         layout.cupid(
           [['a', 'b', 'c']],
-          [{ type: 'partner', origin: 'a', target: 'b' }]
-        )
+          [{ type: 'partner', origin: 'a', target: 'b' }],
+        ),
       ).to.deep.equal([['a', 'b', 'c']])
     })
   })
 
-  describe('.partialWeightSort()', function () {
-    it('should sorts by weights', function () {
+  describe('.partialWeightSort()', () => {
+    it('should sorts by weights', () => {
       const list = ['baz', 'foo', 'bar']
       layout.partialWeightSort(list, { foo: 0, bar: 1, baz: 2 })
       expect(list).to.deep.equal(['foo', 'bar', 'baz'])
     })
 
-    it('should does not move items without weights', function () {
+    it('should does not move items without weights', () => {
       const list = ['hello', 'baz', 'super', 'foo', 'bar', 'moo']
       layout.partialWeightSort(list, { foo: 0, bar: 1, baz: 2 })
       expect(list).to.deep.equal(['hello', 'foo', 'super', 'bar', 'baz', 'moo'])
     })
   })
 
-  describe('.wmedian()', function () {
-    _.each(TEST_DATA, function (data) {
-      it(`should find correct median order for ${data.title}`, function () {
+  describe('.wmedian()', () => {
+    _.each(TEST_DATA, (data) => {
+      it(`should find correct median order for ${data.title}`, () => {
         const order = layout.wmedian(data.order, data.links, true)
         _.each(
           _.zip(order, data.medianOrder || data.order),
-          splat(function (a, b) {
+          splat((a, b) => {
             expect(a).to.deep.equal(b)
-          })
+          }),
         )
       })
     })
   })
 
-  describe('.transpose()', function () {
-    it('should swap nodes to get a better graph ordering', function () {
+  describe('.transpose()', () => {
+    it('should swap nodes to get a better graph ordering', () => {
       const order = [
         ['a', 'b', 'c'],
         ['d', 'e', 'f', 'g'],
@@ -284,8 +283,8 @@ describe('layout', function () {
     })
   })
 
-  describe('.layout() (sanity checks)', function () {
-    it('should produce a layout for some test data', function () {
+  describe('.layout() (sanity checks)', () => {
+    it('should produce a layout for some test data', () => {
       const LINKS = [
         { origin: 'dadb', target: 'mumb', type: 'partner' },
         { origin: 'mumb', target: 'sonb', type: 'child' },
@@ -330,7 +329,7 @@ describe('layout', function () {
       // Really minimal checks right now, pretty much just testing
       // that the code runs without throwing an exception
       expect(_.intersection(nodes, _.keys(layoutData.nodes)).length).to.equal(
-        nodes.length
+        nodes.length,
       )
       expect(_.isArray(layoutData.lines)).to.equal(true)
     })

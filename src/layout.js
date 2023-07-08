@@ -1,4 +1,4 @@
-/* eslint-disable no-constant-condition, no-param-reassign, no-use-before-define, no-shadow, prefer-destructuring, prefer-rest-params, prefer-const, no-var, vars-on-top, block-scoped-var, no-lonely-if, no-plusplus, consistent-return */
+/* eslint-disable block-scoped-var, consistent-return, no-constant-condition, no-lonely-if, no-param-reassign, no-plusplus, no-shadow, no-use-before-define, no-var, prefer-const, prefer-destructuring, vars-on-top */
 
 import _ from 'underscore'
 
@@ -31,7 +31,7 @@ import _ from 'underscore'
 // Set to true for console trace output (make it VERY slow)
 const TRACE = false
 
-const assert = function (assertion, message) {
+const assert = (assertion, message) => {
   if (console && console.assert) {
     console.assert(assertion, message)
   } else if (!assertion) {
@@ -41,12 +41,12 @@ const assert = function (assertion, message) {
 
 if (TRACE) {
   if (console && !console.groupCollapsed) {
-    console.groupCollapsed = function (x) {
+    console.groupCollapsed = (x) => {
       console.log(`${x} {`)
     }
   }
   if (console && !console.groupEnd) {
-    console.groupEnd = function () {
+    console.groupEnd = () => {
       console.log('}')
     }
   }
@@ -56,23 +56,15 @@ if (TRACE) {
 // Utilities
 //
 
-// Take a function that accepts an array as it's first argument
+// Take a function that accepts an array as its first argument
 // and instead use the elements of that array as the first
 // arguments.
 function splat(fn) {
-  return function () {
-    return fn.apply(this, arguments[0].concat(_.rest(arguments)))
-  }
+  return (...args) => fn.apply(this, args[0].concat(_.rest(args)))
 }
 
 function sum(list) {
-  return _.reduce(
-    list,
-    function (memo, num) {
-      return memo + num
-    },
-    0
-  )
+  return _.reduce(list, (memo, num) => memo + num, 0)
 }
 
 // Find the first index in the array that matches the predicate
@@ -113,17 +105,13 @@ function adjacentGroupBy(list, equality) {
   assert(_.isArray(list), 'list should be an array')
   assert(
     _.isFunction(equality) || _.isUndefined(equality),
-    'equality should be a function if given'
+    'equality should be a function if given',
   )
 
   let next = null
   const ret = []
-  equality =
-    equality ||
-    function (a, b) {
-      return a === b
-    }
-  _.each(list, function (x) {
+  equality = equality || ((a, b) => a === b)
+  _.each(list, (x) => {
     if (next) {
       if (equality(_.last(next), x)) {
         next.push(x)
@@ -150,25 +138,23 @@ function partnerGroups(people, links, includeDefactoPartners) {
 
   // Lookup from parent id to list of children
   const childLookup = _.object(
-    _.map(_.groupBy(_.where(links, { type: 'child' }), 'origin'), function (
-      links,
-      origin
-    ) {
-      return [origin, _.pluck(links, 'target')]
-    })
+    _.map(
+      _.groupBy(_.where(links, { type: 'child' }), 'origin'),
+      (links, origin) => [origin, _.pluck(links, 'target')],
+    ),
   )
 
-  return adjacentGroupBy(people, function (a, b) {
-    // Is partner
-    return (
+  return adjacentGroupBy(
+    people,
+    (a, b) =>
+      // Is partner
       (partnerLookup[a] && partnerLookup[a].target === b) ||
       // Or is co-parent of children (but has no extra with anyone else)
       (includeDefactoPartners &&
         childLookup[a] &&
         childLookup[b] &&
-        _.difference(childLookup[b], childLookup[a]).length === 0)
-    )
-  })
+        _.difference(childLookup[b], childLookup[a]).length === 0),
+  )
 }
 
 // Walk a set of links breadth first starting at a given node
@@ -188,7 +174,7 @@ function walkLinks(start, links, linkFn, nodeFn) {
   let current
   const targetLookup = _.groupBy(links, 'target')
   const originLookup = _.groupBy(links, 'origin')
-  _.each(start, function (node) {
+  _.each(start, (node) => {
     seen[node] = true
   })
 
@@ -207,7 +193,7 @@ function walkLinks(start, links, linkFn, nodeFn) {
     current = queue.shift()
     if (nodeFn) nodeFn(current)
     const currentLinks = (targetLookup[current] || []).concat(
-      originLookup[current] || []
+      originLookup[current] || [],
     )
     currentLinks.forEach(followLink)
   }
@@ -237,7 +223,7 @@ function assignRanks(focusNode, links) {
     nodeRank[startNode] = 0
     rankNode[0] = {}
     rankNode[0][startNode] = true
-    walkLinks(startNode, links, function (link, current, other, reverse) {
+    walkLinks(startNode, links, (link, current, other, reverse) => {
       let r
       if (link.type === 'child') {
         r = nodeRank[current] + (reverse ? -1 : +1)
@@ -252,7 +238,7 @@ function assignRanks(focusNode, links) {
           console.log(
             `${current}(${nodeRank[current]}) -[${link.type}]-${
               reverse ? '< ' : '> '
-            }${other}(${r})`
+            }${other}(${r})`,
           )
         nodeRank[other] = r
         ;(rankNode[r] = rankNode[r] || [])[other] = true
@@ -319,19 +305,20 @@ function crossings(order, links) {
   assert(_.isArray(order), 'Order should be an array')
   assert(_.isArray(links), 'Links should be an array')
 
-  const linksLookup = _.indexBy(links, function (link) {
-    return `${link.origin};${link.target}`
-  })
+  const linksLookup = _.indexBy(
+    links,
+    (link) => `${link.origin};${link.target}`,
+  )
 
   if (TRACE) console.groupCollapsed('crossings')
 
   _.each(
     _.zip(_.initial(order), _.rest(order)),
-    splat(function (rowA, rowB) {
+    splat((rowA, rowB) => {
       // Get all links that go from this row and get the origin and
       // target indices
       const rowLinks = _.compact(
-        _.map(links, function (l) {
+        _.map(links, (l) => {
           let originIndex
           let targetIndex
           originIndex = _.indexOf(rowA, l.origin)
@@ -341,23 +328,23 @@ function crossings(order, links) {
               return [originIndex, targetIndex, l]
             }
           }
-        })
+        }),
       )
 
       _.each(
         rowLinks,
-        splat(function (originA, targetA, linkA, rowIndex) {
+        splat((originA, targetA, linkA, rowIndex) => {
           if (TRACE)
             console.groupCollapsed(
               'Considering link ',
               linkA.origin,
               ' to ',
-              linkA.target
+              linkA.target,
             )
           const crossesWith = {}
           _.each(
             _.rest(rowLinks, rowIndex + 1),
-            splat(function (originB, targetB, linkB) {
+            splat((originB, targetB, linkB) => {
               if (
                 (originA > originB && targetA < targetB) ||
                 (originA < originB && targetA > targetB)
@@ -373,7 +360,7 @@ function crossings(order, links) {
                       'Crosses with link ',
                       linkB.origin,
                       ' to ',
-                      `${linkB.target} HOWEVER is interlinked so not counting`
+                      `${linkB.target} HOWEVER is interlinked so not counting`,
                     )
                 } else {
                   if (TRACE)
@@ -381,21 +368,27 @@ function crossings(order, links) {
                       'Crosses with link ',
                       linkB.origin,
                       ' to ',
-                      linkB.target
+                      linkB.target,
                     )
 
                   // crossingsCount++;
                   crossesWith[linkB.target] = true
                 }
-              } else if (TRACE) console.log("Doesn't cross with link ", linkB.origin, ' to ', linkB.target)
-            })
+              } else if (TRACE)
+                console.log(
+                  "Doesn't cross with link ",
+                  linkB.origin,
+                  ' to ',
+                  linkB.target,
+                )
+            }),
           )
           if (TRACE) console.groupEnd()
           if (TRACE) console.log(`Crossed with ${_.size(crossesWith)} links`)
           crossingsCount += _.size(crossesWith)
-        })
+        }),
       )
-    })
+    }),
   )
 
   if (TRACE) console.log('crossings = ', crossingsCount)
@@ -407,11 +400,7 @@ function sortByWeights(ranks, weights) {
   assert(_.isArray(ranks), 'ranks should be an array')
   assert(_.isObject(weights), 'weights should be an object')
 
-  return _.map(ranks, function (row) {
-    return _.sortBy(row, function (id) {
-      return weights[id]
-    })
-  })
+  return _.map(ranks, (row) => _.sortBy(row, (id) => weights[id]))
 }
 
 // Calculate an initial order for nodes within ranks based on a
@@ -422,9 +411,7 @@ function breadthFirstOrder(ranks, links, fromBottom) {
 
   let currentWeight = 0
   const initialWeights = {}
-  walkLinks(fromBottom ? _.last(ranks) : ranks[0], links, null, function (
-    node
-  ) {
+  walkLinks(fromBottom ? _.last(ranks) : ranks[0], links, null, (node) => {
     if (!(node in initialWeights)) {
       initialWeights[node] = currentWeight++
     }
@@ -445,8 +432,8 @@ function cupid(order, links) {
 
   const partnerLinks = _.indexBy(_.where(links, { type: 'partner' }), 'origin')
   const weights = {}
-  _.each(order, function (row) {
-    _.each(row, function (id, i) {
+  _.each(order, (row) => {
+    _.each(row, (id, i) => {
       const partner = partnerLinks[id]
       if (!(id in weights)) {
         weights[id] = i
@@ -470,9 +457,7 @@ function partialWeightSort(items, weights, swapWhenEqual) {
   assert(_.isObject(weights), 'weights should be an object')
 
   let changed = true
-  const hasWeight = function (x) {
-    return !_.isUndefined(weights[x])
-  }
+  const hasWeight = (x) => !_.isUndefined(weights[x])
 
   // It's a bubbly-good sort!
   while (changed) {
@@ -506,7 +491,7 @@ function wmedian(order, links, topToBottom, swapWhenEqual) {
 
   if (TRACE)
     console.groupCollapsed(
-      `wmedia (topToBottom=${topToBottom}, swapWhenEqual=${swapWhenEqual})`
+      `wmedia (topToBottom=${topToBottom}, swapWhenEqual=${swapWhenEqual})`,
     )
 
   let linksLookup
@@ -518,36 +503,32 @@ function wmedian(order, links, topToBottom, swapWhenEqual) {
 
   // console.log('TOP TO BOTTOM', topToBottom);
   if (topToBottom) {
-    linksLookup = _.indexBy(links, function (link) {
-      return `${link.origin};${link.target}`
-    })
+    linksLookup = _.indexBy(links, (link) => `${link.origin};${link.target}`)
     pairs = _.zip(_.rest(order), _.initial(order))
   } else {
-    linksLookup = _.indexBy(links, function (link) {
-      return `${link.target};${link.origin}`
-    })
+    linksLookup = _.indexBy(links, (link) => `${link.target};${link.origin}`)
     pairs = _.zip(_.initial(order), _.rest(order))
     pairs.reverse()
   }
 
   _.each(
     pairs,
-    splat(function (current, adjacent) {
+    splat((current, adjacent) => {
       const medians = {}
 
       // console.log(current, adjacent, linksLookup);
 
-      _.each(current, function (nodeId) {
+      _.each(current, (nodeId) => {
         medians[nodeId] = medianValue(
           adjPositions(nodeId, adjacent, linksLookup),
-          true
+          true,
         )
 
         // console.log('m', nodeId, medians[nodeId]);
       })
 
       // Give partners the same weights as eachother
-      _.each(current, function (nodeId) {
+      _.each(current, (nodeId) => {
         if (
           partnerLinks[nodeId] &&
           _.contains(current, partnerLinks[nodeId].target)
@@ -573,7 +554,7 @@ function wmedian(order, links, topToBottom, swapWhenEqual) {
 
       // MUTATES CURRENT!!
       partialWeightSort(current, medians, swapWhenEqual)
-    })
+    }),
   )
 
   if (TRACE) console.groupEnd()
@@ -590,7 +571,7 @@ function adjPositions(nodeId, adjacent, linksLookup) {
 
   return _.chain(adjacent)
     .map((adjId, index) =>
-      linksLookup[`${adjId};${nodeId}`] ? index : undefined
+      linksLookup[`${adjId};${nodeId}`] ? index : undefined,
     )
     .filter(_.negate(_.isUndefined))
     .value()
@@ -643,7 +624,7 @@ function transpose(order, links, swapWhenEqual) {
 
   function transposeIteration(row, rowIndex) {
     if (TRACE) console.log('Consider row:', row)
-    _.times(row.length - 1, function (i) {
+    _.times(row.length - 1, (i) => {
       const newRow = _.clone(row)
 
       // TODO: Should we detect when transpose would put the item
@@ -657,7 +638,7 @@ function transpose(order, links, swapWhenEqual) {
             ' and ',
             newRow[i + 2],
             ' as a couple and looking at swapping with',
-            newRow[i]
+            newRow[i],
           )
         swap(newRow, i, i + 1)
         swap(newRow, i + 1, i + 2)
@@ -669,7 +650,7 @@ function transpose(order, links, swapWhenEqual) {
             ' and ',
             newRow[i],
             ' as a couple and looking at swapping with',
-            newRow[i + 1]
+            newRow[i + 1],
           )
         swap(newRow, i, i + 1)
         swap(newRow, i - 1, i)
@@ -693,7 +674,7 @@ function transpose(order, links, swapWhenEqual) {
         if (TRACE)
           console.log(
             'SWAPPED (even though equal) giving crossings of ',
-            bestCrossings
+            bestCrossings,
           )
 
         row = newRow
@@ -708,7 +689,7 @@ function transpose(order, links, swapWhenEqual) {
             'DID NOT SWAP it would have given crossings of ',
             c,
             '>=',
-            bestCrossings
+            bestCrossings,
           )
       }
     })
@@ -739,7 +720,7 @@ function assignRowOrder(order, links, fromBottom) {
   if (TRACE) console.log('Crossing for initial order', bestCrossings)
 
   // TODO: Exit early if things aren't getting better?
-  _.times(ORDERING_ITERATIONS, function (i) {
+  _.times(ORDERING_ITERATIONS, (i) => {
     const reverse = i % 2 === 0
     const swapWhenEqual = Math.floor(i / 2) % 2 === 0
     order = wmedian(order, links, reverse, swapWhenEqual)
@@ -754,7 +735,8 @@ function assignRowOrder(order, links, fromBottom) {
       // } else if (c === bestCrossings && swapWhenEqual) {
       //   if (TRACE) console.log('Swapping with equal cost order', c);
       //   best = order;
-    } else if (TRACE) console.log('Order was not better', c, '>=', bestCrossings)
+    } else if (TRACE)
+      console.log('Order was not better', c, '>=', bestCrossings)
   })
   return best
 }
@@ -774,7 +756,7 @@ function ordering(startId, links) {
   function tryOrdering(fromBottom) {
     if (TRACE)
       console.groupCollapsed(
-        `Trying with initial order from from ${fromBottom ? 'bottom' : 'top'}`
+        `Trying with initial order from from ${fromBottom ? 'bottom' : 'top'}`,
       )
     const order = assignRowOrder(ranks, links, fromBottom)
     const c = crossings(order, links)
@@ -793,7 +775,7 @@ function ordering(startId, links) {
     if (bestCrossings === 0) break
     if (TRACE)
       console.log(
-        "Didn't find perfect layout so trying again with different starting conditions"
+        "Didn't find perfect layout so trying again with different starting conditions",
       )
     links = _.shuffle(links)
   }
@@ -812,15 +794,15 @@ function centeredOn(center, nodes, spacingFn) {
   // We want a bigger gap between partners than between
   // non-partners (to fit the partner line)
   const spacing = [0].concat(
-    _.map(_.zip(_.initial(nodes), _.rest(nodes)), splat(spacingFn))
+    _.map(_.zip(_.initial(nodes), _.rest(nodes)), splat(spacingFn)),
   )
   let xposition = center - sum(spacing) / 2
   return _.map(
     _.zip(nodes, spacing),
-    splat(function (nodeId, width) {
+    splat((nodeId, width) => {
       xposition += width
       return xposition
-    })
+    }),
   )
 }
 
@@ -832,9 +814,10 @@ function layoutSubTree(order, links, coupleSpacingMultiplier) {
     console.groupCollapsed(`layoutSubTree (remaining depth=${order.length})`)
 
   const partnerLookup = _.indexBy(_.where(links, { type: 'partner' }), 'origin')
-  const linksLookup = _.indexBy(links, function (link) {
-    return `${link.origin};${link.target}`
-  })
+  const linksLookup = _.indexBy(
+    links,
+    (link) => `${link.origin};${link.target}`,
+  )
 
   order = _.map(order, _.clone)
   const row = order[0]
@@ -851,20 +834,18 @@ function layoutSubTree(order, links, coupleSpacingMultiplier) {
       placements = layoutSubTree(
         [children].concat(_.rest(remainingRows, 1)),
         links,
-        coupleSpacingMultiplier
+        coupleSpacingMultiplier,
       )
 
       // Strip out already placed items
       _.each(
         _.zip(remainingRows, placements),
-        splat(function (rem, place) {
+        splat((rem, place) => {
           rem.splice(0, place.length)
-        })
+        }),
       )
     } else {
-      placements = _.map(remainingRows, function () {
-        return []
-      })
+      placements = _.map(remainingRows, () => [])
     }
 
     // Add positions for group to the results for the current row
@@ -883,21 +864,21 @@ function layoutSubTree(order, links, coupleSpacingMultiplier) {
     if (TRACE) console.log(`Center=${center}`)
 
     placements.unshift(
-      centeredOn(center, group, (nodeA, nodeB) => {
-        return partnerLookup[nodeA] && partnerLookup[nodeA].target === nodeB
+      centeredOn(center, group, (nodeA, nodeB) =>
+        partnerLookup[nodeA] && partnerLookup[nodeA].target === nodeB
           ? coupleSpacingMultiplier
-          : 1
-      })
+          : 1,
+      ),
     )
 
     // Fit the sub-tree as far left as possible
     const plusx = _.max(
       _.map(
         _.zip(minx, placements),
-        splat((mx, place) => {
-          return place.length ? mx - place[0] : Number.NEGATIVE_INFINITY
-        })
-      )
+        splat((mx, place) =>
+          place.length ? mx - place[0] : Number.NEGATIVE_INFINITY,
+        ),
+      ),
     )
 
     // Alternative version that gives a less compact version
@@ -906,19 +887,19 @@ function layoutSubTree(order, links, coupleSpacingMultiplier) {
     // Apply minimum x and add to results for the child rows (MUTATES RESULTS)
     _.each(
       _.zip(results, placements),
-      splat(function (res, place) {
-        _.each(place, function (p) {
+      splat((res, place) => {
+        _.each(place, (p) => {
           res.push(p + plusx)
         })
-      })
+      }),
     )
 
     // Figure out minimum x values for each row from now on. Add 10%
     // to the child rows (so non-siblings aren't right next to
     // eachother)
-    minx = _.map(results, (res, index) => {
-      return res.length ? _.last(res) + (index === 0 ? 1 : 1.1) : 0
-    })
+    minx = _.map(results, (res, index) =>
+      res.length ? _.last(res) + (index === 0 ? 1 : 1.1) : 0,
+    )
 
     if (TRACE) console.log(`minx=${minx}`)
     if (TRACE) console.groupEnd()
@@ -930,18 +911,14 @@ function layoutSubTree(order, links, coupleSpacingMultiplier) {
     if (TRACE) console.log('Leaf rank')
     results = [_.range(row.length)]
   } else {
-    results = _.map(order, function () {
-      return []
-    })
+    results = _.map(order, () => [])
     const grouped = partnerGroups(row, links, true)
     var minx = _.map(order, _.constant(0))
-    _.each(grouped, function (group) {
+    _.each(grouped, (group) => {
       if (TRACE) console.groupCollapsed(`Consider ${group}`)
       function isChild(childId) {
         if (group.length === 0) return true
-        return _.any(group, function (parentId) {
-          return linksLookup[`${parentId};${childId}`]
-        })
+        return _.any(group, (parentId) => linksLookup[`${parentId};${childId}`])
       }
       const lastChildIndex = findLastIndex(remainingRows[0], isChild)
       const firstChildIndex = findIndex(remainingRows[0], isChild)
@@ -976,20 +953,20 @@ function compactLeft(order, xcoords, links) {
 
   const childLookup = _.mapObject(
     _.groupBy(_.where(links, { type: 'child' }), 'origin'),
-    (links) => _.pluck(links, 'target')
+    (links) => _.pluck(links, 'target'),
   )
 
   function compactRow(row) {
     const groups = partnerGroups(row, links, true)
     _.each(
       _.zip(_.initial(groups), _.rest(groups)),
-      splat(function (prevGroup, group) {
+      splat((prevGroup, group) => {
         // Would moving this group back a bit improve things?
         const min = xcoords[_.last(prevGroup)] + 1.1
         let newx
         const children = _.intersection.apply(
           this,
-          _.map(group, _.propertyOf(childLookup))
+          _.map(group, _.propertyOf(childLookup)),
         )
         if (children.length) {
           const center =
@@ -1003,12 +980,12 @@ function compactLeft(order, xcoords, links) {
 
         if (newx < xcoords[group[0]]) {
           const change = newx - xcoords[group[0]]
-          _.each(group, function (node) {
+          _.each(group, (node) => {
             xcoords[node] += change
           })
           improvement = true
         }
-      })
+      }),
     )
   }
 
@@ -1027,8 +1004,8 @@ function xcoordinates(order, links, coupleSpacingMultiplier) {
   // relationship. It would be nice to fix this in a less hacky way
   // but this works for now!
   links = _.clone(links)
-  order = _.map(order, function (row) {
-    _.each(row, function (id) {
+  order = _.map(order, (row) => {
+    _.each(row, (id) => {
       links.push({ origin: '__PHANTOM__', target: id, type: 'child' })
     })
     return row.concat(['__PHANTOM__'])
@@ -1047,17 +1024,13 @@ function xcoordinates(order, links, coupleSpacingMultiplier) {
 
 function getLines(order, links, coords, lineVSpacing) {
   // Lines between partners
-  const partnerLines = _.map(_.where(links, { type: 'partner' }), function (
-    link
-  ) {
-    return {
-      x1: coords[link.origin].x,
-      y1: coords[link.origin].y,
-      x2: coords[link.target].x,
-      y2: coords[link.target].y,
-      type: 'partner',
-    }
-  })
+  const partnerLines = _.map(_.where(links, { type: 'partner' }), (link) => ({
+    x1: coords[link.origin].x,
+    y1: coords[link.origin].y,
+    x2: coords[link.target].x,
+    y2: coords[link.target].y,
+    type: 'partner',
+  }))
 
   // Lines between parents and children
   const partnerLookup = _.indexBy(_.where(links, { type: 'partner' }), 'origin')
@@ -1065,13 +1038,13 @@ function getLines(order, links, coords, lineVSpacing) {
   const childLines = _.flatten(
     _.map(
       _.zip(_.initial(order), _.rest(order)),
-      splat(function (parentRow, childRow) {
+      splat((parentRow, childRow) => {
         const grouped = partnerGroups(parentRow, links, true)
 
         // Assumes that groups are all of size 1 or 2 (LOOK HERE IF YOU
         // IMPLEMENT EX-RELATIONSHIPS ETC)
         const parentConnections = _.flatten(
-          _.map(grouped, function (group) {
+          _.map(grouped, (group) => {
             let targetIds
             let xOrigins
             const leftPartner = group[0]
@@ -1080,12 +1053,12 @@ function getLines(order, links, coords, lineVSpacing) {
             // rightPartner will often be undefined (eg a single person)
             const leftChildren = _.pluck(
               _.where(links, { type: 'child', origin: leftPartner }),
-              'target'
+              'target',
             )
             if (rightPartner) {
               const rightChildren = _.pluck(
                 _.where(links, { type: 'child', origin: rightPartner }),
-                'target'
+                'target',
               )
 
               // If a child is in both left and right then we move them to
@@ -1122,7 +1095,7 @@ function getLines(order, links, coords, lineVSpacing) {
 
             return _.map(
               _.zip(targetIds, xOrigins),
-              splat(function (tids, originxs) {
+              splat((tids, originxs) => {
                 if (tids.length === 0) return []
                 const targetxs = _.map(tids, (id) => coords[id].x)
                 return {
@@ -1132,44 +1105,38 @@ function getLines(order, links, coords, lineVSpacing) {
                   originxs,
                   targetxs,
                 }
-              })
+              }),
             )
-          })
+          }),
         )
 
         // Find the adjancent groups that can be merged (all the same
         // children, happens for parents who are not partners)
         const mergeableParentConnections = adjacentGroupBy(
           parentConnections,
-          function (conna, connb) {
-            return _.isEqual(conna.targetxs, connb.targetxs)
-          }
+          (conna, connb) => _.isEqual(conna.targetxs, connb.targetxs),
         )
         const mergedParentConnections = _.map(
           mergeableParentConnections,
-          function (conns) {
-            return {
-              minx: _.min(_.pluck(conns, 'minx')),
-              maxx: _.max(_.pluck(conns, 'maxx')),
-              originxs: _.union.apply(null, _.pluck(conns, 'originxs')),
-              targetxs: _.union.apply(null, _.pluck(conns, 'targetxs')),
-            }
-          }
+          (conns) => ({
+            minx: _.min(_.pluck(conns, 'minx')),
+            maxx: _.max(_.pluck(conns, 'maxx')),
+            originxs: _.union.apply(null, _.pluck(conns, 'originxs')),
+            targetxs: _.union.apply(null, _.pluck(conns, 'targetxs')),
+          }),
         )
 
         // Group all the runs of overlapping lines
         const groupedParentConnections = adjacentGroupBy(
           mergedParentConnections,
-          function (conna, connb) {
-            return conna.maxx >= connb.minx
-          }
+          (conna, connb) => conna.maxx >= connb.minx,
         )
 
         const originY = coords[parentRow[0]].y
         const targetY = coords[childRow[0]].y
         const midY = (originY + targetY) / 2
-        return _.map(groupedParentConnections, function (connectionGroup) {
-          return _.map(connectionGroup, function (conn, connIndex) {
+        return _.map(groupedParentConnections, (connectionGroup) =>
+          _.map(connectionGroup, (conn, connIndex) => {
             const y =
               midY -
               ((connectionGroup.length - 1) / 2 - connIndex) * lineVSpacing
@@ -1177,22 +1144,30 @@ function getLines(order, links, coords, lineVSpacing) {
             // console.log(conn.debug, y, ((connectionGroup.length-1)/2-connIndex)*lineVSpacing, conn.targetxs.length);
             return [
               // Upper stalks
-              _.map(conn.originxs, function (ox) {
-                return { x1: ox, y1: originY, x2: ox, y2: y, type: 'child' }
-              }),
+              _.map(conn.originxs, (ox) => ({
+                x1: ox,
+                y1: originY,
+                x2: ox,
+                y2: y,
+                type: 'child',
+              })),
 
               // Horizontal line
               { x1: conn.minx, y1: y, x2: conn.maxx, y2: y, type: 'child' },
 
               // Lower stalks
-              _.map(conn.targetxs, function (tx) {
-                return { x1: tx, y1: y, x2: tx, y2: targetY, type: 'child' }
-              }),
+              _.map(conn.targetxs, (tx) => ({
+                x1: tx,
+                y1: y,
+                x2: tx,
+                y2: targetY,
+                type: 'child',
+              })),
             ]
-          })
-        })
-      })
-    )
+          }),
+        )
+      }),
+    ),
   )
 
   return _.flatten([partnerLines, childLines])
@@ -1209,14 +1184,14 @@ function layout(
   minHSpacing,
   partnerHSpacing,
   rankHeight,
-  lineVSpacing
+  lineVSpacing,
 ) {
   // var order = ordering(startId, normaliseLinks(links));
   const order = ordering(startId, links)
   const xcoords = xcoordinates(
     order,
     links,
-    (nodeWidth + partnerHSpacing) / (nodeWidth + minHSpacing)
+    (nodeWidth + partnerHSpacing) / (nodeWidth + minHSpacing),
   )
 
   const coords = {}
