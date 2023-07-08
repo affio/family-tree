@@ -359,6 +359,6 @@ angular
       type: '@ngType',
       model: '=ngModel',
     },
-    // eslint-disable-next-line global-require
-    templateUrl: require('./card.svg'),
+    // eslint-disable-next-line global-require, import/no-unresolved
+    template: require('bundle-text:./card.svg'),
   }))

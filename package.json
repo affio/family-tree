@@ -3,18 +3,6 @@
   "version": "0.0.0",
   "description": "Family Tree layout engine",
   "type": "module",
-  "scripts": {
-    "unit": "vitest run",
-    "lint:eslint": "eslint --ext js index.js src/",
-    "lint:prettier": "prettier . --check",
-    "lint": "npm-run-all lint:*",
-    "format:eslint": "npm run lint:eslint -- --fix",
-    "format:prettier": "prettier . --write",
-    "format": "npm-run-all format:*",
-    "build": "parcel build index.html",
-    "start": "parcel index.html",
-    "test": "npm-run-all build lint unit"
-  },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/affio/family-tree.git"
@@ -59,6 +47,18 @@
     "simple-git-hooks": "^2.8.1",
     "vite": "^4.4.2",
     "vitest": "^0.33.0"
+  },
+  "scripts": {
+    "unit": "vitest run",
+    "lint:eslint": "eslint --ext js index.js src/",
+    "lint:prettier": "prettier . --check",
+    "lint": "npm-run-all lint:*",
+    "format:eslint": "npm run lint:eslint -- --fix",
+    "format:prettier": "prettier . --write",
+    "format": "npm-run-all format:*",
+    "build": "parcel build index.html --no-scope-hoist",
+    "start": "parcel index.html",
+    "test": "npm-run-all build lint unit"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
