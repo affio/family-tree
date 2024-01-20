@@ -46,7 +46,7 @@
     "parcel": "^2.9.3",
     "prettier": "^3.0.0",
     "simple-git-hooks": "^2.8.1",
-    "vite": "^4.4.12",
+    "vite": "^4.5.2",
     "vitest": "^0.33.0"
   },
   "scripts": {
