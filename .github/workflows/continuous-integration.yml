@@ -41,7 +41,7 @@ jobs:
 
   dependabot:
     permissions:
-      pull-requests: write
+      contents: write
     runs-on: ubuntu-latest
     needs: [lint, build, test]
     if: ${{ github.actor == 'dependabot[bot]' }}
