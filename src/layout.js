@@ -1,5 +1,3 @@
-/* eslint-disable block-scoped-var, consistent-return, no-constant-condition, no-lonely-if, no-param-reassign, no-plusplus, no-shadow, no-use-before-define, no-var, prefer-const, prefer-destructuring, vars-on-top */
-
 import _ from 'underscore'
 
 // Work out layout for family tree to make it as readable and as

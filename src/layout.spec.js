@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign, no-underscore-dangle, prefer-rest-params */
-
 import { describe, test as it } from 'vitest'
 import { expect } from 'chai'
 import _ from 'underscore'

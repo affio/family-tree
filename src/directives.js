@@ -1,5 +1,3 @@
-/* eslint-disable no-underscore-dangle, no-param-reassign, prefer-spread, eqeqeq */
-
 import _ from 'underscore'
 import angular from 'angular'
 import Hammer from 'hammerjs'
@@ -359,6 +357,5 @@ angular
       type: '@ngType',
       model: '=ngModel',
     },
-    // eslint-disable-next-line global-require, import/no-unresolved
     template: require('bundle-text:./card.svg'),
   }))
