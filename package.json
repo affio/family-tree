@@ -36,7 +36,7 @@
   "devDependencies": {
     "@babel/core": "^7.26.10",
     "@eslint/js": "^9.22.0",
-    "@parcel/transformer-inline-string": "~2.12.0",
+    "@parcel/transformer-inline-string": "~2.13.3",
     "babel-plugin-angularjs-annotate": "^0.10.0",
     "chai": "^5.2.0",
     "eslint": "^9.22.0",
