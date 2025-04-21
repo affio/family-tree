@@ -35,11 +35,11 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.10",
-    "@eslint/js": "^9.24.0",
+    "@eslint/js": "^9.25.0",
     "@parcel/transformer-inline-string": "~2.14.4",
     "babel-plugin-angularjs-annotate": "^0.10.0",
     "chai": "^5.2.0",
-    "eslint": "^9.24.0",
+    "eslint": "^9.25.0",
     "eslint-plugin-prettier": "^5.2.6",
     "globals": "^16.0.0",
     "lint-staged": "^15.5.1",
@@ -49,7 +49,7 @@
     "simple-git-hooks": "^2.12.1",
     "svgo": "^3.3.2",
     "vite": "^6.3.2",
-    "vitest": "^3.1.1"
+    "vitest": "^3.1.2"
   },
   "scripts": {
     "unit": "vitest run",
