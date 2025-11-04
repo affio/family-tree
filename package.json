@@ -35,11 +35,11 @@
   },
   "devDependencies": {
     "@babel/core": "^7.28.5",
-    "@eslint/js": "^9.39.0",
+    "@eslint/js": "^9.39.1",
     "@parcel/transformer-inline-string": "~2.16.0",
     "babel-plugin-angularjs-annotate": "^0.10.0",
     "chai": "^6.2.0",
-    "eslint": "^9.39.0",
+    "eslint": "^9.39.1",
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.5.0",
     "lint-staged": "^16.2.6",
