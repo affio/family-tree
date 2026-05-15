@@ -39,7 +39,7 @@
     "@parcel/transformer-inline-string": "~2.16.4",
     "babel-plugin-angularjs-annotate": "^0.10.0",
     "chai": "^6.2.2",
-    "eslint": "^10.3.0",
+    "eslint": "^10.4.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "globals": "^17.6.0",
