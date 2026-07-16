@@ -34,7 +34,7 @@
     "underscore": "^1.13.8"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.7",
+    "@babel/core": "^8.0.1",
     "@eslint/js": "^10.0.1",
     "@parcel/transformer-inline-string": "~2.16.4",
     "babel-plugin-angularjs-annotate": "^0.10.0",
